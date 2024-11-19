@@ -1,0 +1,168 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+// Class to represent a book in the library
+class Book {
+public:
+    string title;      // Book title
+    string author;     // Author's name
+    int ISBN;          // ISBN number
+    bool available;    // Availability status (true = available, false = not available)
+    Book* next;        // Pointer to the next book in the list
+
+    // Constructor to initialize a book object
+    Book(string title, string author, int ISBN, bool available) {
+        this->title = title;
+        this->author = author;
+        this->ISBN = ISBN;
+        this->available = available;
+        this->next = nullptr;
+    }
+};
+
+// Function to add a new book to the library (at the end of the linked list)
+void addBook(Book*& head, string title, string author, int ISBN, bool available) {
+    Book* newBook = new Book(title, author, ISBN, available); // Create a new book object
+    if (head == nullptr) {
+        head = newBook; // If the list is empty, the new book becomes the head
+    } else {
+        Book* temp = head;
+        while (temp->next != nullptr) {
+            temp = temp->next; // Traverse to the end of the list
+        }
+        temp->next = newBook; // Add the new book at the end
+    }
+    cout << "Book added successfully!\n";
+}
+
+// Function to display all books in the library
+void displayBooks(Book* head) {
+    if (head == nullptr) {
+        cout << "No books in the library.\n";
+        return;
+    }
+    cout << "\n--- Library Collection ---\n";
+    Book* temp = head;
+    while (temp != nullptr) {
+        cout << "Title: " << temp->title << "\n"
+             << "Author: " << temp->author << "\n"
+             << "ISBN: " << temp->ISBN << "\n"
+             << "Availability: " << (temp->available ? "Available" : "Not Available") << "\n\n";
+        temp = temp->next; // Move to the next book
+    }
+}
+
+// Function to search for a book by title
+void searchBook(Book* head, string title) {
+    Book* temp = head;
+    while (temp != nullptr) {
+        if (temp->title == title) {
+            cout << "\nBook Found:\n";
+            cout << "Title: " << temp->title << "\n"
+                 << "Author: " << temp->author << "\n"
+                 << "ISBN: " << temp->ISBN << "\n"
+                 << "Availability: " << (temp->available ? "Available" : "Not Available") << "\n";
+            return;
+        }
+        temp = temp->next; // Move to the next book
+    }
+    cout << "Book not found.\n";
+}
+
+// Function to remove a book by title
+void removeBook(Book*& head, string title) {
+    Book* temp = head;
+    Book* prev = nullptr;
+
+    // Traverse to find the book
+    while (temp != nullptr && temp->title != title) {
+        prev = temp;
+        temp = temp->next;
+    }
+
+    if (temp == nullptr) {
+        cout << "Book not found.\n";
+        return;
+    }
+
+    if (prev == nullptr) {
+        // If the book to be removed is the head
+        head = temp->next;
+    } else {
+        // If the book is in the middle or end
+        prev->next = temp->next;
+    }
+
+    delete temp; // Free the memory
+    cout << "Book removed successfully.\n";
+}
+
+int main() {
+    Book* head = nullptr; // Head of the linked list
+    int choice;
+
+    do {
+        // Display the menu
+        cout << "\n--- Library Management System ---";
+        cout << "\n1. Add Book";
+        cout << "\n2. Display Books";
+        cout << "\n3. Search Book";
+        cout << "\n4. Remove Book";
+        cout << "\n5. Exit";
+        cout << "\nEnter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1: {
+            // Add a book
+            string title, author;
+            int ISBN;
+            bool available;
+            cout << "Enter Book Title: ";
+            cin.ignore();
+            getline(cin, title);
+            cout << "Enter Author: ";
+            getline(cin, author);
+            cout << "Enter ISBN: ";
+            cin >> ISBN;
+            cout << "Is the book available? (1 for Yes, 0 for No): ";
+            cin >> available;
+            addBook(head, title, author, ISBN, available);
+            break;
+        }
+        case 2:
+            // Display all books
+            displayBooks(head);
+            break;
+
+        case 3: {
+            // Search for a book
+            string title;
+            cout << "Enter Book Title to Search: ";
+            cin.ignore();
+            getline(cin, title);
+            searchBook(head, title);
+            break;
+        }
+        case 4: {
+            // Remove a book
+            string title;
+            cout << "Enter Book Title to Remove: ";
+            cin.ignore();
+            getline(cin, title);
+            removeBook(head, title);
+            break;
+        }
+        case 5:
+            // Exit
+            cout << "Exiting...\n";
+            break;
+
+        default:
+            cout << "Invalid choice. Please try again.\n";
+        }
+    } while (choice != 5);
+
+    return 0;
+}
